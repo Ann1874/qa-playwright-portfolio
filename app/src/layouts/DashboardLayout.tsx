@@ -16,7 +16,10 @@ export default function DashboardLayout() {
   const location = useLocation()
   const navigate = useNavigate()
   const [showLogoutModal, setShowLogoutModal] = useState(false)
-  const [sidebarOpen, setSidebarOpen] = useState(true)
+  // Start closed on mobile, open on desktop
+  const [sidebarOpen, setSidebarOpen] = useState(() =>
+    typeof window !== 'undefined' ? window.innerWidth >= 768 : true
+  )
 
   const handleLogoutClick = () => {
     setShowLogoutModal(true)

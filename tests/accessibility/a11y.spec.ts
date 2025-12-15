@@ -1,6 +1,15 @@
 import { test, expect } from '@playwright/test'
 import AxeBuilder from '@axe-core/playwright'
 
+// Helper to open mobile menu if needed
+async function openMobileMenuIfNeeded(page: import('@playwright/test').Page) {
+  const menuButton = page.getByTestId('menu-button')
+  if (await menuButton.isVisible()) {
+    await menuButton.click()
+    await expect(page.getByTestId('sidebar')).toBeVisible()
+  }
+}
+
 /**
  * Accessibility Tests (WCAG 2.1 AA)
  *
@@ -48,6 +57,7 @@ test.describe('Accessibility Compliance', () => {
     // Wait for toast to disappear before navigating
     await page.getByTestId('toast-close').click()
 
+    await openMobileMenuIfNeeded(page)
     await page.getByRole('link', { name: 'Settings' }).click()
 
     const results = await new AxeBuilder({ page })
@@ -99,6 +109,8 @@ test.describe('Keyboard Navigation', () => {
     await page.getByTestId('email-input').fill('user@example.com')
     await page.getByTestId('password-input').fill('password123')
     await page.getByTestId('submit-button').click()
+
+    await openMobileMenuIfNeeded(page)
 
     // Focus on Settings link and activate
     const settingsLink = page.getByRole('link', { name: 'Settings' })

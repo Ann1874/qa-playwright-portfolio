@@ -1,5 +1,14 @@
 import { test, expect } from '@playwright/test'
 
+// Helper to open mobile menu if needed
+async function openMobileMenuIfNeeded(page: import('@playwright/test').Page) {
+  const menuButton = page.getByTestId('menu-button')
+  if (await menuButton.isVisible()) {
+    await menuButton.click()
+    await expect(page.getByTestId('sidebar')).toBeVisible()
+  }
+}
+
 /**
  * Modal Component Tests
  *
@@ -12,6 +21,7 @@ test.describe('Modal Dialogs', () => {
     await page.getByTestId('password-input').fill('password123')
     await page.getByTestId('submit-button').click()
     await expect(page.getByTestId('sidebar')).toBeVisible()
+    await openMobileMenuIfNeeded(page)
   })
 
   test('opens logout confirmation modal', async ({ page }) => {

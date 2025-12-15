@@ -1,5 +1,14 @@
 import { test, expect } from '@playwright/test'
 
+// Helper to open mobile menu if needed
+async function openMobileMenuIfNeeded(page: import('@playwright/test').Page) {
+  const menuButton = page.getByTestId('menu-button')
+  if (await menuButton.isVisible()) {
+    await menuButton.click()
+    await expect(page.getByTestId('sidebar')).toBeVisible()
+  }
+}
+
 /**
  * Dashboard Navigation & Components Tests
  *
@@ -68,10 +77,12 @@ test.describe('Dashboard', () => {
   })
 
   test('navigates between dashboard and settings', async ({ page }) => {
+    await openMobileMenuIfNeeded(page)
     await page.getByRole('link', { name: 'Settings' }).click()
     await expect(page).toHaveURL('/settings')
     await expect(page.getByText('Manage your account preferences')).toBeVisible()
 
+    await openMobileMenuIfNeeded(page)
     await page.getByRole('link', { name: 'Dashboard' }).click()
     await expect(page).toHaveURL('/')
     await expect(page.getByText("Here's what's happening today")).toBeVisible()

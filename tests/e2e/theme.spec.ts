@@ -1,5 +1,14 @@
 import { test, expect } from '@playwright/test'
 
+// Helper to open mobile menu if needed
+async function openMobileMenuIfNeeded(page: import('@playwright/test').Page) {
+  const menuButton = page.getByTestId('menu-button')
+  if (await menuButton.isVisible()) {
+    await menuButton.click()
+    await expect(page.getByTestId('sidebar')).toBeVisible()
+  }
+}
+
 /**
  * Theme Toggle Tests
  *
@@ -12,6 +21,7 @@ test.describe('Theme Toggle', () => {
     await page.getByTestId('password-input').fill('password123')
     await page.getByTestId('submit-button').click()
     await expect(page.getByTestId('sidebar')).toBeVisible()
+    await openMobileMenuIfNeeded(page)
   })
 
   test('displays theme toggle button', async ({ page }) => {
@@ -74,6 +84,7 @@ test.describe('Theme Toggle', () => {
     await expect(html).toHaveClass(/dark/)
 
     // Navigate back to dashboard
+    await openMobileMenuIfNeeded(page)
     await page.getByRole('link', { name: 'Dashboard' }).click()
     await expect(html).toHaveClass(/dark/)
   })

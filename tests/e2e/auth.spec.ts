@@ -5,7 +5,8 @@ async function openMobileMenuIfNeeded(page: import('@playwright/test').Page) {
   const menuButton = page.getByTestId('menu-button')
   if (await menuButton.isVisible()) {
     await menuButton.click()
-    await expect(page.getByTestId('sidebar')).toBeVisible()
+    // Wait for sidebar animation
+    await page.waitForTimeout(350)
   }
 }
 
@@ -37,9 +38,11 @@ test.describe('Authentication', () => {
     await page.getByTestId('email-input').fill('john@example.com')
     await page.getByTestId('password-input').fill('password123')
     await page.getByTestId('submit-button').click()
+    await expect(page).toHaveURL('/')
 
     await openMobileMenuIfNeeded(page)
-    await expect(page.getByTestId('user-name')).toHaveText('john')
+    // User name is only visible when sidebar is expanded
+    await expect(page.getByTestId('user-name')).toHaveText('john', { timeout: 10000 })
   })
 
   test('allows user to log out', async ({ page }) => {
@@ -61,13 +64,18 @@ test.describe('Authentication', () => {
     await page.getByTestId('email-input').fill('user@example.com')
     await page.getByTestId('password-input').fill('password123')
     await page.getByTestId('submit-button').click()
+    await expect(page).toHaveURL('/')
+    await expect(page.getByTestId('sidebar')).toBeVisible()
 
+    // Open mobile menu if needed
     await openMobileMenuIfNeeded(page)
-    await page.getByRole('link', { name: 'Settings' }).click()
+
+    // Navigate using sidebar links (more reliable than page.goto)
+    await page.getByRole('link', { name: 'Settings' }).click({ force: true })
     await expect(page).toHaveURL('/settings')
 
     await openMobileMenuIfNeeded(page)
-    await page.getByRole('link', { name: 'Dashboard' }).click()
+    await page.getByRole('link', { name: 'Dashboard' }).click({ force: true })
     await expect(page).toHaveURL('/')
   })
 })

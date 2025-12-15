@@ -1,5 +1,14 @@
 import { test, expect } from '@playwright/test'
 
+// Helper to open mobile menu if needed
+async function openMobileMenuIfNeeded(page: import('@playwright/test').Page) {
+  const menuButton = page.getByTestId('menu-button')
+  if (await menuButton.isVisible()) {
+    await menuButton.click()
+    await expect(page.getByTestId('sidebar')).toBeVisible()
+  }
+}
+
 /**
  * Toast Notification Tests
  *
@@ -27,6 +36,7 @@ test.describe('Toast Notifications', () => {
     await page.getByTestId('toast-close').click()
 
     // Go to settings and save
+    await openMobileMenuIfNeeded(page)
     await page.getByRole('link', { name: 'Settings' }).click()
     await page.getByTestId('save-button').click()
 
@@ -80,6 +90,7 @@ test.describe('Toast Notifications', () => {
     await page.getByTestId('toast-close').click()
 
     // Logout
+    await openMobileMenuIfNeeded(page)
     await page.getByTestId('logout-button').click()
     await page.getByTestId('modal-confirm').click()
 

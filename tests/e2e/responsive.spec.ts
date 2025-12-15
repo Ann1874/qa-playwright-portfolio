@@ -48,16 +48,17 @@ test.describe('Mobile Navigation', () => {
     await page.getByTestId('menu-button').click()
     await expect(page.getByTestId('sidebar-backdrop')).toBeVisible()
 
-    await page.getByTestId('sidebar-backdrop').click()
+    // Click on the right side of the screen (away from sidebar)
+    await page.getByTestId('sidebar-backdrop').click({ position: { x: 350, y: 300 } })
 
     await expect(page.getByTestId('sidebar-backdrop')).not.toBeVisible()
   })
 
-  test('closes sidebar when clicking close button', async ({ page }) => {
+  test('closes sidebar when clicking toggle button', async ({ page }) => {
     await page.getByTestId('menu-button').click()
-    await expect(page.getByTestId('close-sidebar')).toBeVisible()
+    await expect(page.getByTestId('sidebar-toggle')).toBeVisible()
 
-    await page.getByTestId('close-sidebar').click()
+    await page.getByTestId('sidebar-toggle').click()
 
     // Wait for animation
     await page.waitForTimeout(300)
@@ -113,8 +114,8 @@ test.describe('Desktop Layout', () => {
     expect(box?.x).toBeGreaterThanOrEqual(0)
   })
 
-  test('close button is hidden on desktop', async ({ page }) => {
-    await expect(page.getByTestId('close-sidebar')).not.toBeVisible()
+  test('sidebar toggle is visible on desktop', async ({ page }) => {
+    await expect(page.getByTestId('sidebar-toggle')).toBeVisible()
   })
 })
 
